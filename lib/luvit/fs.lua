@@ -254,6 +254,7 @@ function ReadStream:initialize(path, options)
   self.last = options.length and self.offset + options.length
 
   if (options.fd ~= nil) then
+    self.reading = true
     self.fd = options.fd
     self:_read()
     return
@@ -262,6 +263,7 @@ function ReadStream:initialize(path, options)
   fs.open(pathlib._makeLong(path), options.flags, options.mode, function (err, fd)
     if err then return self:emit("error", err) end
     self.fd = fd
+    self.reading = true
     self:_read()
   end)
 end
@@ -270,10 +272,16 @@ function ReadStream:readStart()
   if (self.reading) then
     return
   end
+  self.reading = true
   self:_read()
 end
 
+function ReadStream:readStop()
+  self.reading = false
+end
+
 function ReadStream:_read()
+  if not self.reading then return end
   local options = self.options
 
   local chunk_size = options.chunk_size
@@ -284,8 +292,6 @@ function ReadStream:_read()
       to_read = self.last - self.offset
     end
   end
-
-  self.reading = true
 
   fs.read(self.fd, self.offset, to_read, function (err, chunk, len)
     if err or len == 0 then
