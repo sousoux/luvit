@@ -170,7 +170,7 @@ function Socket:_initEmitters()
   end)
 
   self._handle:on('error', function(err)
-    self:destroy(err)
+    self:destroy()
   end)
 end
 
@@ -229,7 +229,6 @@ function Socket:connect(...)
       callback()
     end
   end)
-
   dns.lookup(options.host, function(err, ip, addressType)
     if err then
       process.nextTick(function()
