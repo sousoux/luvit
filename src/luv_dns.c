@@ -301,9 +301,7 @@ static void luv_push_gai_async_error(lua_State *L, int status, const char* sourc
   snprintf(code_str, sizeof(code_str), "%i", status);
   /* NOTE: gai_strerror() is _not_ threadsafe on Windows */
   luv_push_async_error_raw(L, code_str, gai_strerror(status), source, NULL);
-  if (lua_isfunction(L, 3) == 1) {
-    luv_acall(L, 1, 0, "dns_after");
-  }
+  luv_acall(L, 1, 0, "dns_after");
 }
 
 /* Pushes an error object onto the stack */
