@@ -182,7 +182,7 @@ function module.require(filepath, dirname)
   -- Builtin modules
   local module = package.loaded[filepath]
   if module then return module end
-  if filepath:find("^[a-z_]+$") then
+  if filepath:find("^[a-z_0-9]+$") then
     local loader = builtinLoader(filepath)
     if type(loader) == "function" then
       module = loader()
