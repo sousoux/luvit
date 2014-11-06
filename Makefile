@@ -155,6 +155,7 @@ endif
 LUVLIBS=${BUILDDIR}/utils.o          \
         ${BUILDDIR}/luv_fs.o         \
         ${BUILDDIR}/luv_dns.o        \
+        ${BUILDDIR}/lbase64.o        \
         ${BUILDDIR}/luv_debug.o      \
         ${BUILDDIR}/luv_handle.o     \
         ${BUILDDIR}/luv_udp.o        \

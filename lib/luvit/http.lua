@@ -25,6 +25,7 @@ local stringFormat = require('string').format
 local Object = require('core').Object
 local Error = require('core').Error
 local url = require('url')
+local base64 = require('base64')
 
 local END_OF_FILE = 0
 local CRLF = '\r\n'
@@ -624,7 +625,10 @@ function ClientRequest:initialize(options, callback)
     self:onResponse(callback, ...)
   end)
 
-  -- TODO Authorization
+  if options.auth and not self:getHeader('Authorization') then
+    -- basic auth
+    this:setHeader('Authorization', 'Basic ' .. base64.encode(options.auth))
+  end
 
   if options.headers then
     for k, v in pairs(options.headers) do

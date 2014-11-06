@@ -36,6 +36,7 @@
 #include "lcrypto.h"
 #endif
 #include "luv_zlib.h"
+#include "lbase64.h"
 #include "luv_portability.h"
 #include "lconstants.h"
 #include "lhttp_parser.h"
@@ -208,6 +209,9 @@ int luvit_init(lua_State *L, uv_loop_t* loop, int argc, char *argv[])
   /* Register uv */
   lua_pushcfunction(L, luaopen_uv_native);
   lua_setfield(L, -2, "uv_native");
+  /* Register uv */
+  lua_pushcfunction(L, luaopen_base64);
+  lua_setfield(L, -2, "base64");
   /* Register env */
   lua_pushcfunction(L, luaopen_env);
   lua_setfield(L, -2, "env");
