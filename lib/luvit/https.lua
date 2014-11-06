@@ -59,6 +59,15 @@ local function request(options, callback)
   return http.request(options, callback)
 end
 
+local function createServer(options, onConnection)
+  local server
+  server = tls.createServer(options, function(client)
+    return http.onClient(server, client, onConnection)
+  end)
+  return server
+end
+
 local https = {}
 https.request = request
+https.createServer = createServer
 return https
