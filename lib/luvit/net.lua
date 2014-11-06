@@ -41,15 +41,18 @@ function Socket:_connect(address, port, addressType)
   end
   self.remoteAddress = address
 
-  local connectionReq = nil
-  if addressType == 4 then
-    connectionReq = self._handle:connect(address, port)
-  elseif addressType == 6 then
-    connectionReq = self._handle:connect6(address, port)
+  local function _pconnect()
+	  if addressType == 4 then
+		return self._handle:connect(address, port)
+	  elseif addressType == 6 then
+		return self._handle:connect6(address, port)
+	  end
   end
 
+  local ok, connectionReq = pcall(_pconnect)
+
   -- connect only returns an error or nothing
-  if (connectionReq ~= nil) then
+  if not ok or connectionReq ~= nil then
     self:destroy()
   end
 end
@@ -294,7 +297,6 @@ function Server:listen(port, ... --[[ ip, callback --]] )
   if not self._handle then
     self._handle = Tcp:new()
   end
-
   -- Future proof
   if type(args[1]) == 'function' then
     callback = args[1]
