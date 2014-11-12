@@ -174,6 +174,7 @@ function Socket:_initEmitters()
 
   self._handle:on('error', function(err)
     self:destroy()
+    self:emit('error', err)
   end)
 end
 
