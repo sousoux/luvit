@@ -99,6 +99,7 @@ void luv_io_ctx_init(luv_io_ctx_t *cbs)
 {
   cbs->rcb = LUA_NOREF;
   cbs->rdata = LUA_NOREF;
+  cbs->rths = LUA_NOREF;
 }
 
 void luv_io_ctx_add(lua_State* L, luv_io_ctx_t *cbs, int index)
@@ -132,18 +133,31 @@ void luv_io_ctx_callback_add(lua_State *L, luv_io_ctx_t *cbs, int index)
     lua_pushvalue(L, index); /* Store the callback */
     cbs->rcb = luaL_ref(L, LUA_REGISTRYINDEX);
   }
+  lua_pushthread(L);
+  cbs->rths = luaL_ref(L, LUA_REGISTRYINDEX);
 }
 
 void luv_io_ctx_callback_rawgeti(lua_State *L, luv_io_ctx_t *cbs)
 {
-  lua_rawgeti(L, LUA_REGISTRYINDEX, cbs->rcb);
+  if (cbs->rcb != LUA_NOREF)
+    lua_rawgeti(L, LUA_REGISTRYINDEX, cbs->rcb);
 }
 
 void luv_io_ctx_unref(lua_State* L, luv_io_ctx_t *cbs)
 {
-  luaL_unref(L, LUA_REGISTRYINDEX, cbs->rdata);
-  luaL_unref(L, LUA_REGISTRYINDEX, cbs->rcb);
-  luv_io_ctx_init(cbs);
+  if (cbs->rdata != LUA_NOREF) {
+    luaL_unref(L, LUA_REGISTRYINDEX, cbs->rdata);
+    cbs->rdata = LUA_NOREF;
+  }
+  if (cbs->rcb != LUA_NOREF) {
+    luaL_unref(L, LUA_REGISTRYINDEX, cbs->rcb);
+    cbs->rcb = LUA_NOREF;
+  }
+  if (cbs->rths != LUA_NOREF) {
+    luaL_unref(L, LUA_REGISTRYINDEX, cbs->rths);
+    cbs->rths = LUA_NOREF;
+  }
+/*  luv_io_ctx_init(cbs); */
 }
 
 const char* luv_handle_type_to_string(uv_handle_type type) {

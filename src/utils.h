@@ -82,6 +82,7 @@ luv_handle_t* luv_handle_create(lua_State* L, size_t size, const char* type);
 typedef struct {
   int rcb; /* callback ref */
   int rdata; /* string ref */
+  int rths; /* thread state ref */
 } luv_io_ctx_t;
 
 void luv_io_ctx_init(luv_io_ctx_t *cbs);

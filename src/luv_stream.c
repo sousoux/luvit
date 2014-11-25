@@ -78,19 +78,22 @@ void luv_after_shutdown(uv_shutdown_t* req, int status) {
 
   /* load the request callback */
   luv_io_ctx_callback_rawgeti(L, cbs);
-  luv_io_ctx_unref(L, cbs);
 
-  if (lua_isfunction(L, -1)) {
-    if (status == -1) {
-      luv_push_async_error(L, uv_last_error(luv_get_loop(L)), "after_shutdown", NULL);
-      luv_acall(L, 1, 0, "after_shutdown");
+  /* Fix to cover the case where there is no callback */
+  if (lua_gettop(L) > 0) {
+    if (lua_isfunction(L, -1)) {
+      if (status == -1) {
+        luv_push_async_error(L, uv_last_error(luv_get_loop(L)), "after_shutdown", NULL);
+        luv_acall(L, 1, 0, "after_shutdown");
+      } else {
+        luv_acall(L, 0, 0, "after_shutdown");
+      }
     } else {
-      luv_acall(L, 0, 0, "after_shutdown");
+      lua_pop(L, 1);
     }
-  } else {
-    lua_pop(L, 1);
   }
 
+  luv_io_ctx_unref(L, cbs);
   luv_handle_unref(L, req->handle->data);
   free(req->data);
   free(req);
@@ -105,19 +108,22 @@ void luv_after_write(uv_write_t* req, int status) {
 
   /* load the request callback */
   luv_io_ctx_callback_rawgeti(L, cbs);
-  luv_io_ctx_unref(L, cbs);
 
-  if (lua_isfunction(L, -1)) {
-    if (status == -1) {
-      luv_push_async_error(L, uv_last_error(luv_get_loop(L)), "after_write", NULL);
-      luv_acall(L, 1, 0, "after_write");
+  /* Fix to cover the case where there is no callback */
+  if (lua_gettop(L) > 0) {
+    if (lua_isfunction(L, -1)) {
+      if (status == -1) {
+        luv_push_async_error(L, uv_last_error(luv_get_loop(L)), "after_write", NULL);
+        luv_acall(L, 1, 0, "after_write");
+      } else {
+        luv_acall(L, 0, 0, "after_write");
+      }
     } else {
-      luv_acall(L, 0, 0, "after_write");
+      lua_pop(L, 1);
     }
-  } else {
-    lua_pop(L, 1);
   }
-
+  /* release after */
+  luv_io_ctx_unref(L, cbs);
   luv_handle_unref(L, req->handle->data);
   free(req->data);
   free(req);
