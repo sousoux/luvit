@@ -57,6 +57,18 @@ luv_poll_start(lua_State* L) {
 }
 
 int
+luv_poll_interupt_start(lua_State* L) {
+  uv_poll_t* handle = (uv_poll_t*)luv_checkudata(L, 1, "poll");
+
+  luaL_checktype(L, 2, LUA_TFUNCTION);
+  luv_register_event(L, 1, "data", 2);
+  uv_poll_start(handle, UV_INTERRUPT, poll_cb);
+  luv_handle_ref(L, handle->data, 1);
+
+  return 0;
+}
+
+int
 luv_poll_stop(lua_State* L) {
   uv_poll_t* handle = (uv_poll_t*)luv_checkudata(L, 1, "poll");
   if (uv_poll_stop(handle)) {

@@ -26,6 +26,7 @@
 
 int luv_new_poll(lua_State* L);
 int luv_poll_start(lua_State* L);
+int luv_poll_interupt_start(lua_State* L);
 int luv_poll_stop(lua_State* L);
 
 #endif

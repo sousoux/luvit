@@ -4,7 +4,7 @@
   ignore = dirty
 [submodule "deps/uv"]
 	path = deps/uv
-	url = https://github.com/joyent/libuv.git
+	url = https://github.com/sousoux/libuv.git
   ignore = dirty
 [submodule "deps/luajit"]
 	path = deps/luajit

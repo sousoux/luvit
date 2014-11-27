@@ -139,6 +139,7 @@ static const luaL_reg luv_f[] = {
   /* Poll functions */
   {"newPoll", luv_new_poll},
   {"pollStart", luv_poll_start},
+  {"pollInterruptStart", luv_poll_interupt_start},
   {"pollStop", luv_poll_stop},
 
   /* FS functions */
