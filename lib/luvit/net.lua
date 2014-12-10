@@ -121,6 +121,7 @@ end
 
 function Socket:shutdown(callback)
   if self.destroyed == true then
+    callback()
     return
   end
 
@@ -234,6 +235,7 @@ function Socket:connect(...)
     end
   end)
   dns.lookup(options.host, function(err, ip, addressType)
+    if self.destroyed then return end
     if err then
       process.nextTick(function()
         self:emit('error', err)

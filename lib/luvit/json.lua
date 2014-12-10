@@ -155,7 +155,8 @@ function JSON.stringify(value, options)
         generator:mapClose()
       end
     else
-      error("Cannot stringify " .. t .. " value")
+      -- bring inline with nodejs
+      generator:null()
     end
   end
   add(value)
