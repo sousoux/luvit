@@ -183,6 +183,7 @@ const char* luv_handle_type_to_string(uv_handle_type type) {
 void luv_set_loop(lua_State *L, uv_loop_t *loop) {
   lua_pushlightuserdata(L, loop);
   lua_setfield(L, LUA_REGISTRYINDEX, "loop");
+  loop->data = L;
 }
 
 uv_loop_t* luv_get_loop(lua_State *L) {
@@ -191,6 +192,10 @@ uv_loop_t* luv_get_loop(lua_State *L) {
   loop = lua_touserdata(L, -1);
   lua_pop(L, 1);
   return loop;
+}
+
+lua_State * luv_get_state(uv_loop_t * loop) {
+  return (lua_State *) loop->data;
 }
 
 
