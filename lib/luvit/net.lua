@@ -238,8 +238,7 @@ function Socket:connect(...)
     if self.destroyed then return end
     if err then
       process.nextTick(function()
-        self:emit('error', err)
-        self:destroy()
+        self:destroy(err)
       end)
     else
       timer.active(self)
