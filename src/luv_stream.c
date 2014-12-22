@@ -157,8 +157,10 @@ int luv_listen (lua_State* L) {
   luv_register_event(L, 1, "connection", 2);
 
   if (uv_listen(handle, backlog_size, luv_on_connection)) {
-    uv_err_t err = uv_last_error(luv_get_loop(L));
-    luaL_error(L, "listen: %s", uv_strerror(err));
+    lua_pushvalue(L, 1);
+    luv_push_async_error(L, uv_last_error(luv_get_loop(L)), "listen", NULL);
+    luv_emit_event(L, "error", 1);
+    return 0;
   }
 
   lua_pushvalue(L, 1);
@@ -173,8 +175,9 @@ int luv_accept (lua_State* L) {
   uv_stream_t* server = (uv_stream_t*)luv_checkudata(L, 1, "stream");
   uv_stream_t* client = (uv_stream_t*)luv_checkudata(L, 2, "stream");
   if (uv_accept(server, client)) {
-    uv_err_t err = uv_last_error(luv_get_loop(L));
-    luaL_error(L, "accept: %s", uv_strerror(err));
+    lua_pushvalue(L, 1);
+    luv_push_async_error(L, uv_last_error(luv_get_loop(L)), "accept", NULL);
+    luv_emit_event(L, "error", 1);
   }
 
   return 0;
