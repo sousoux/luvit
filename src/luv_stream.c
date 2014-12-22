@@ -159,7 +159,7 @@ int luv_listen (lua_State* L) {
   if (uv_listen(handle, backlog_size, luv_on_connection)) {
     lua_pushvalue(L, 1);
     luv_push_async_error(L, uv_last_error(luv_get_loop(L)), "listen", NULL);
-    luv_emit_event(L, "error", 1);
+    luv_emit_event(L, "listening", 1);
     return 0;
   }
 
