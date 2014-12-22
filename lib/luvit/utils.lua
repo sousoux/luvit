@@ -40,6 +40,8 @@ local colors = {
   Bwhite   = "1;37"
 }
 
+utils._useColors = false
+
 if utils._useColors == nil then
   utils._useColors = true
 end
@@ -222,7 +224,7 @@ function utils.prettyPrint(...)
     arguments[i] = utils.dump(arguments[i])
   end
 
-  process.stdout:write(table.concat(arguments, "\t") .. "\n")
+  process.stderr:write(table.concat(arguments, "\t") .. "\n")
 end
 
 -- Like p, but prints to stderr using blocking I/O for better debugging
