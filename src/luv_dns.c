@@ -297,10 +297,7 @@ static const char* ares_errno_string(int errorno)
 
 static void luv_push_gai_async_error(lua_State *L, int status, const char* source)
 {
-  char code_str[32];
-  snprintf(code_str, sizeof(code_str), "%i", status);
-  /* NOTE: gai_strerror() is _not_ threadsafe on Windows */
-  luv_push_async_error_raw(L, code_str, gai_strerror(status), source, NULL);
+  luv_push_async_error(L, uv_last_error(luv_get_loop(L)), "getaddrinfo", NULL);
   luv_acall(L, 1, 0, "dns_after");
 }
 
