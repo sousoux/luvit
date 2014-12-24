@@ -121,8 +121,7 @@ end
 
 function Socket:shutdown(callback)
   if self.destroyed == true or not self._handle then
-    if callback then
-      callback()
+      return callback and callback()
     end
   end
 
