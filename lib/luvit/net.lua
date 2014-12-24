@@ -120,7 +120,7 @@ function Socket:_write(data, callback)
 end
 
 function Socket:shutdown(callback)
-  if self.destroyed == true then
+  if self.destroyed == true or not self._handle then
     if callback then
       callback()
     end
