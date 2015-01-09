@@ -125,12 +125,19 @@ end
 
 -- tries to load a module at a specified absolute path
 local function loadModule(filepath, verbose)
-
   -- First, look for exact file match if the extension is given
   local extension = path.extname(filepath)
+
+  -- prioritize loading compiled code
   if extension == ".lua" then
-    return myloadfile(filepath)
+    local luafile = filepath:match("(.*)%.lua$")
+    return myloadfile(luafile .. ".lc") or myloadfile(luafile .. ".lua")
   end
+
+  if extension == ".lc" then
+    return myloadfile(filepath)
+  end    
+
   if extension == ".luvit" then
     return myloadlib(filepath)
   end
@@ -144,7 +151,9 @@ local function loadModule(filepath, verbose)
   end
 
   -- Try to load as either lua script or binary extension
-  local fn = myloadfile(filepath .. ".lua") or myloadfile(path.join(filepath, "init.lua"))
+  -- Prefer pre compiled
+  local fn = myloadfile(filepath .. ".lc") or myloadfile(path.join(filepath, "init.lc"))
+          or myloadfile(filepath .. ".lua") or myloadfile(path.join(filepath, "init.lua"))
           or myloadlib(filepath .. ".luvit") or myloadlib(path.join(filepath, "init.luvit"))
   if fn then return fn end
 
