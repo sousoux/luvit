@@ -185,12 +185,9 @@ end
 function Emitter:once(name, callback)
   local emitter = self
   local function wrapped(...)
-    p("handlers",wrapped,rawget(emitter, "handlers"))
     emitter:removeListener(name, wrapped)
-    p("handlers",wrapped,rawget(emitter, "handlers"))
     callback(...)
   end
-  p("register", name, wrapped)
   self:on(name, wrapped)
   return self
 end
@@ -266,7 +263,6 @@ end
 
 -- Remove a listener so that it no longer catches events.
 function Emitter:removeListener(name, callback)
-  p("remove", name, callback)
   local handlers = rawget(self, "handlers")
   if not handlers then return end
   local handlers_for_type = rawget(handlers, name)
