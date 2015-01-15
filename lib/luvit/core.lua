@@ -155,6 +155,9 @@ the beginning its parameter list.
 local Emitter = Object:extend()
 core.Emitter = Emitter
 
+local function handlerRemoved()
+end
+
 -- By default, and error events that are not listened for should throw errors
 function Emitter:missingHandlerType(name, ...)
   if name == "error" then
@@ -180,10 +183,14 @@ end
 
 -- Same as `Emitter:on` except it de-registers itself after the first event.
 function Emitter:once(name, callback)
+  local emitter = self
   local function wrapped(...)
-    self:removeListener(name, wrapped)
+    p("handlers",wrapped,rawget(emitter, "handlers"))
+    emitter:removeListener(name, wrapped)
+    p("handlers",wrapped,rawget(emitter, "handlers"))
     callback(...)
   end
+  p("register", name, wrapped)
   self:on(name, wrapped)
   return self
 end
@@ -216,7 +223,13 @@ function Emitter:listenerCount(name)
   if not handlers_for_type then
     return 0
   else
-    return #handlers_for_type
+    local count = 0
+    for _,handler in ipairs(handlers_for_type) do
+      if handler ~= handlerRemoved then
+        count = count + 1
+      end
+    end 
+    return count
   end
 end
 
@@ -232,26 +245,35 @@ function Emitter:emit(name, ...)
     self:missingHandlerType(name, ...)
     return
   end
+  local called = false
   for i, callback in ipairs(handlers_for_type) do
-    callback(...)
+    if callback ~= handlerRemoved then
+      callback(...)
+      called = true
+    end
   end
   for i = #handlers_for_type, 1, -1 do
-    if not handlers_for_type[i] then
+    if handlers_for_type[i] == handlerRemoved then
       table.remove(handlers_for_type, i)
     end
+  end
+  if not called then
+    self:missingHandlerType(name, ...)
+    return
   end
   return self
 end
 
 -- Remove a listener so that it no longer catches events.
 function Emitter:removeListener(name, callback)
+  p("remove", name, callback)
   local handlers = rawget(self, "handlers")
   if not handlers then return end
   local handlers_for_type = rawget(handlers, name)
   if not handlers_for_type then return end
   for i = #handlers_for_type, 1, -1 do
-    if handlers_for_type[i] == callback or callback == nil then
-      handlers_for_type[i] = nil
+    if handlers_for_type[i] == callback then
+      handlers_for_type[i] = handlerRemoved
     end
   end
 end
@@ -282,6 +304,11 @@ function Emitter:listeners(name)
   if not handlers_for_type then
     return {}
   else
+    for i = #handlers_for_type, 1, -1 do
+      if handlers_for_type[i] == handlerRemoved then
+        table.remove(handlers_for_type, i)
+      end
+    end
     return handlers_for_type
   end
 end
