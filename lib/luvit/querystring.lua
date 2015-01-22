@@ -67,5 +67,36 @@ function querystring.parse(str, sep, eq)
   return vars
 end
 
+function querystring.stringify(tab, sep, eq)
+  local query = {}
+  sep = sep or '&'
+  eq = eq or "="
+
+  local keys = {}
+
+  local n = 0
+  for name,value in pairs(tab) do
+    nm = querystring.urlencode(tostring(name))
+    if type(value) == 'table' then
+      for _,v in ipairs(value) do
+        local v = querystring.urlencode(tostring(v))
+        if v ~= "" then
+          n = n + 1
+          query[n] = string.format('%s%s%s', nm, eq, v)
+        end
+      end
+    else
+      local v = querystring.urlencode(tostring(value))
+      n = n + 1
+      if v ~= "" then
+        query[n] = string.format('%s%s%s', nm, eq, v)
+      else
+        query[n] = nm
+      end
+    end
+  end
+  return table.concat(query, sep)
+end
+
 -- module
 return querystring
