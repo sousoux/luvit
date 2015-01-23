@@ -268,7 +268,7 @@ function Emitter:removeListener(name, callback)
   local handlers_for_type = rawget(handlers, name)
   if not handlers_for_type then return end
   for i = #handlers_for_type, 1, -1 do
-    if callback = nil or handlers_for_type[i] == callback then
+    if callback == nil or handlers_for_type[i] == callback then
       handlers_for_type[i] = handlerRemoved
     end
   end
