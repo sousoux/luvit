@@ -45,6 +45,7 @@
 
 static int luvit_exit(lua_State* L) {
   int exit_code = luaL_checkint(L, 1);
+  uv_tty_reset_mode();
   exit(exit_code);
   return 0;
 }

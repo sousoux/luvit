@@ -71,9 +71,11 @@ int main(int argc, char *argv[])
     printf("%s\n", lua_tostring(L, -1));
     lua_pop(L, 1);
     lua_close(L);
+    uv_tty_reset_mode();
     return -1;
   }
 
   lua_close(L);
+  uv_tty_reset_mode();
   return 0;
 }
