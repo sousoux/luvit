@@ -1173,6 +1173,7 @@ function http.onClient(server, client, onConnection)
       if request.should_keep_alive then
         parser:finish()
       end
+      request = nil
     end
   })
 
