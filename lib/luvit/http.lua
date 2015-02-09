@@ -1172,8 +1172,10 @@ function http.onClient(server, client, onConnection)
       request:removeListener("end")
       if request.should_keep_alive then
         parser:finish()
+        if not request.upgrade then
+          request = nil
+        end
       end
-      request = nil
     end
   })
 
