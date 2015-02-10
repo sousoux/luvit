@@ -845,6 +845,10 @@ end
 local Response = iStream:extend()
 http.Response = Response
 
+function Response:onSocketError(err)
+  self:emit('error', err)
+end
+
 function Response:initialize(socket)
   self.code = 200
   self.headers = {}
@@ -852,9 +856,7 @@ function Response:initialize(socket)
   self.headers_sent = false
   self.socket = socket
 
-  self.socket:on('error', function(err)
-      self:emit('error', err)
-  end)
+  self.socket:on('error', Response.onSocketError)
 end
 
 Response.auto_date = true
@@ -1063,7 +1065,8 @@ function Response:done(callback)
     end)
   else
     self:emit("end")
-    -- TODO: cleanup more thoroughly
+    -- Remove the listener added in initialize
+    self.socket:removeListener('error', Response.onSocketError)
     self.socket = nil
   end
 end
