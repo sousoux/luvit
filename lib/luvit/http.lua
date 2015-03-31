@@ -1166,7 +1166,7 @@ function http.onClient(server, client, onConnection)
       request:emit("end")
       request:removeListener("end")
       if request.should_keep_alive then
-        parser:finish()
+        pcall(parser.finish, parser)
         if not request.upgrade then
           request = nil
         end
@@ -1208,7 +1208,7 @@ function http.onClient(server, client, onConnection)
       request:emit("end")
       request:removeListener("end")
     end
-    parser:finish()
+    pcall(parser.finish, parser)
   end)
 
   client:once("close", function ()
@@ -1216,11 +1216,11 @@ function http.onClient(server, client, onConnection)
       request:emit("end")
       request:removeListener("end")
     end
-    parser:finish()
+    pcall(parser.finish, parser)
   end)
 
   client:once("error", function (err)
-    parser:finish()
+    pcall(parser.finish, parser)
     -- read from closed client
     if err.code == "ECONNRESET" then
       -- ???
