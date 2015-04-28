@@ -233,7 +233,7 @@ function Socket:connect(...)
       callback()
     end
   end)
-  dns.lookup(options.host, function(err, ip, addressType)
+  dns.lookup(options.host, 4, function(err, ip, addressType)
     if self.destroyed then return end
     if err then
       process.nextTick(function()

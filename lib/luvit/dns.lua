@@ -98,7 +98,7 @@ function dns.lookup(domain, family, callback)
       return
     end
     if response_family then
-      callback(nil, addresses[1], family)
+      callback(nil, addresses[1], response_family)
     else
       callback(nil, addresses[1], string.find(addresses[1], ':') and 6 or 4)
     end
