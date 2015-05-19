@@ -726,12 +726,14 @@ end
 function ClientRequest:onSocket(socket)
   local response = ServerResponse:new(self)
   local headers, current_field
+  local end_response_emitted = false
   response.socket = socket
 
   self.socket = socket
 
   self.parser = HttpParser.new("response", {
     onMessageBegin = function ()
+      end_response_emitted = false
       headers = {}
     end,
     onUrl = function (url)
@@ -756,6 +758,7 @@ function ClientRequest:onSocket(socket)
       response:emit("data", chunk)
     end,
     onMessageComplete = function ()
+      end_response_emitted = true
       response:emit("end")
     end
   })
@@ -770,6 +773,9 @@ function ClientRequest:onSocket(socket)
     self:onSocketClose()
   end)
   socket:once('end', function()
+    if not end_response_emitted then
+      response:emit('end')
+    end
     self:emit('end')
   end)
   socket:once('timeout', function()
