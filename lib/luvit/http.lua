@@ -773,7 +773,7 @@ function ClientRequest:onSocket(socket)
     self:onSocketClose()
   end)
   socket:once('end', function()
-    if not end_response_emitted then
+    if not end_response_emitted and headers and not headers[contentLengthExpression] then
       response:emit('end')
     end
     self:emit('end')
