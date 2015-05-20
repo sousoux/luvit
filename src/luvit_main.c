@@ -18,6 +18,9 @@
 #include <string.h>
 #include <stdlib.h>
 #include <limits.h> /* PATH_MAX */
+#include <stdio.h>
+#include <unistd.h>
+#include <fcntl.h>
 
 #include "lua.h"
 #include "lualib.h"
@@ -68,14 +71,16 @@ int main(int argc, char *argv[])
 
   /* Run the main lua script */
   if (luvit_run(L)) {
-    printf("%s\n", lua_tostring(L, -1));
+    int saved_flags = fcntl(STDOUT_FILENO, F_GETFL);
+    fcntl(STDOUT_FILENO, F_SETFL, saved_flags & ~O_NONBLOCK);
+    fprintf(stderr, "%s\n", lua_tostring(L, -1));
     lua_pop(L, 1);
     lua_close(L);
-    uv_tty_reset_mode();
     return -1;
   }
 
   lua_close(L);
-  uv_tty_reset_mode();
+  int saved_flags = fcntl(STDOUT_FILENO, F_GETFL);
+  fcntl(STDOUT_FILENO, F_SETFL, saved_flags & ~O_NONBLOCK);
   return 0;
 }
