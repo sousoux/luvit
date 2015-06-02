@@ -27,10 +27,12 @@ local dgram = {}
 
 local function lookup(address, family, callback)
   local matchedFamily = net.isIP(address)
-  if matchedFamily then
+  if matchedFamily == 4 or matchedFamily == 6 then
     return callback(nil, address, matchedFamily)
   end
-  return dns.lookup(address, family, callback)
+  return dns.lookup(address, family, function(...)
+    callback(...)
+  end)
 end
 
 local function lookup4(address, callback)
@@ -128,7 +130,7 @@ function Socket:send(msg, port, address, callback)
       return
     end
 
-    self._handle:send(msg, port, address, callback)
+    self._handle:send(msg, port, ip, callback)
   end)
 end
 
