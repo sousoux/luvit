@@ -627,7 +627,7 @@ function ClientRequest:initialize(options, callback)
 
   if options.auth and not self:getHeader('Authorization') then
     -- basic auth
-    this:setHeader('Authorization', 'Basic ' .. base64.encode(options.auth))
+    self:setHeader('Authorization', 'Basic ' .. base64.encode(options.auth))
   end
 
   if options.headers then
